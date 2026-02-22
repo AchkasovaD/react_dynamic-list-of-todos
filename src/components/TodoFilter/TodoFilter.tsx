@@ -78,16 +78,20 @@ export const TodoFilter: React.FC<Props> = ({ todos, onFilterChange }) => {
           <i className="fas fa-magnifying-glass" />
         </span>
 
-        {inputValue && (
-          <span className="icon is-right" style={{ pointerEvents: 'all' }}>
-            <button
-              data-cy="clearSearchButton"
-              type="button"
-              className="delete"
-              onClick={handleClearSearch}
-            />
-          </span>
-        )}
+        <span
+          className="icon is-right"
+          style={{
+            pointerEvents: 'all',
+            display: inputValue ? 'inline-flex' : 'none',
+          }}
+        >
+          <button
+            data-cy="clearSearchButton"
+            type="button"
+            className="delete"
+            onClick={handleClearSearch}
+          />
+        </span>
       </p>
     </form>
   );
