@@ -14,12 +14,20 @@ export const App: React.FC = () => {
   const [originalTodos, setOriginalTodos] = useState<Todo[]>([]);
   const [displayedTodos, setDisplayedTodos] = useState<Todo[]>([]);
   const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
+  const [isLoadingTodos, setIsLoadingTodos] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    getTodos().then(todos => {
-      setOriginalTodos(todos);
-      setDisplayedTodos(todos);
-    });
+    getTodos()
+      .then(todos => {
+        setOriginalTodos(todos);
+        setDisplayedTodos(todos);
+        setErrorMessage(null);
+      })
+      .catch(error =>
+        setErrorMessage(`Failed to load todos. The error is ${error} `),
+      )
+      .finally(() => setIsLoadingTodos(false));
   }, []);
 
   function getTodoById(id: number): Todo | undefined {
@@ -29,6 +37,15 @@ export const App: React.FC = () => {
   const handleCloseModal = () => {
     setSelectedTodoId(null);
   };
+
+  const handleFilterChange = (todos: Todo[]) => setDisplayedTodos(todos);
+  const handleSelectTodoId = (id: number | null) => setSelectedTodoId(id);
+
+  const selectedTodo = selectedTodoId ? getTodoById(selectedTodoId) : null;
+
+  if (errorMessage) {
+    return <div className="notification is-danger">{errorMessage}</div>;
+  }
 
   return (
     <>
@@ -40,18 +57,18 @@ export const App: React.FC = () => {
             <div className="block">
               <TodoFilter
                 todos={originalTodos}
-                setDisplayedTodos={setDisplayedTodos}
+                onFilterChange={handleFilterChange}
               />
             </div>
 
             <div className="block">
-              {originalTodos.length === 0 ? (
+              {isLoadingTodos ? (
                 <Loader />
               ) : (
                 <TodoList
                   todos={displayedTodos}
                   selectedTodoId={selectedTodoId}
-                  onSelectTodoId={setSelectedTodoId}
+                  onSelectTodoId={handleSelectTodoId}
                 />
               )}
             </div>
@@ -59,11 +76,8 @@ export const App: React.FC = () => {
         </div>
       </div>
 
-      {selectedTodoId !== null && (
-        <TodoModal
-          todo={getTodoById(selectedTodoId)!}
-          onClose={handleCloseModal}
-        />
+      {selectedTodo !== null && selectedTodo !== undefined && (
+        <TodoModal todo={selectedTodo} onClose={handleCloseModal} />
       )}
     </>
   );

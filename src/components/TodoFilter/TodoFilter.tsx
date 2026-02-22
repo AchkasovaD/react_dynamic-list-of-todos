@@ -5,10 +5,10 @@ type Filter = 'all' | 'active' | 'completed';
 
 type Props = {
   todos: Todo[];
-  setDisplayedTodos: (todos: Todo[]) => void;
+  onFilterChange: (todos: Todo[]) => void;
 };
 
-export const TodoFilter: React.FC<Props> = ({ todos, setDisplayedTodos }) => {
+export const TodoFilter: React.FC<Props> = ({ todos, onFilterChange }) => {
   const [inputValue, setInputValue] = useState('');
   const [statusFilter, setStatusFilter] = useState<Filter>('all');
 
@@ -27,7 +27,7 @@ export const TodoFilter: React.FC<Props> = ({ todos, setDisplayedTodos }) => {
       );
     }
 
-    setDisplayedTodos(filtered);
+    onFilterChange(filtered);
   };
 
   const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
